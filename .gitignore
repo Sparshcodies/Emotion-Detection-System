@@ -1,7 +1,11 @@
 images
+.ipynb_checkpoints
 *.png
 *.jpg
 *.jpeg
 *.doc
 *.docx
 *.pdf
+*.tmp
+Pytorch
+
