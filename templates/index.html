@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: #28a745;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+        img {
+            margin-top: 20px;
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Emotion Detection</h1>
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="detectEmotion()">Detect Emotion</button>
+        <p id="result">Emotion will be displayed here</p>
+        <img id="outputImage" style="display:none;" alt="Detected Emotion Image">
+    </div>
+
+    <script>
+        function detectEmotion() {
+            const fileInput = document.getElementById('imageInput');
+            const result = document.getElementById('result');
+            const outputImage = document.getElementById('outputImage');
+            if (fileInput.files.length === 0) {
+                result.textContent = "Please upload an image first.";
+                return;
+            }
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            result.textContent = "Detecting emotion...";
+            
+            fetch("/predict", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    result.textContent = "Detected Emotion: " + data.predictions.join(", ");
+                    outputImage.src = data.image_url;
+                    outputImage.style.display = "block";
+                } else {
+                    result.textContent = "Error: " + data.error;
+                }
+            })
+            .catch(error => {
+                result.textContent = "An error occurred. Please try again.";
+                console.error("Error:", error);
+            });
+        }
+    </script>
+</body>
+</html>
